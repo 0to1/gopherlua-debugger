@@ -1,9 +1,10 @@
 package lua_debugger
 
 import (
+	"sync"
+
 	"github.com/edolphin-ydf/gopherlua-debugger/proto"
 	lua "github.com/yuin/gopher-lua"
-	"sync"
 )
 
 func LuaError(L *lua.LState, msg string) int {
@@ -42,7 +43,7 @@ func (f *Facade) TcpConnect(L *lua.LState, host string, port int) error {
 	f.t = &Transport{}
 	f.t.Handler = f.HandleMsg
 	if err := f.t.Connect(host, port); err != nil {
-		LuaError(L, err.Error())
+		// LuaError(L, err.Error())
 		return err
 	}
 
