@@ -1,6 +1,7 @@
 package lua_debugger
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/edolphin-ydf/gopherlua-debugger/proto"
@@ -40,6 +41,7 @@ func newFacade() *Facade {
 
 func (f *Facade) TcpConnect(L *lua.LState, host string, port int) error {
 	f.states[L] = struct{}{}
+
 	f.t = &Transport{}
 	f.t.Handler = f.HandleMsg
 	if err := f.t.Connect(host, port); err != nil {
@@ -48,6 +50,20 @@ func (f *Facade) TcpConnect(L *lua.LState, host string, port int) error {
 	}
 
 	f.WaiteIDE(true)
+	return nil
+}
+
+func (f *Facade) TcpClose(L *lua.LState) error {
+	if f.t == nil {
+		return fmt.Errorf("Connect is nil")
+	}
+
+	if err := f.t.Close(); err != nil {
+		return err
+	}
+
+	delete(f.states, L)
+
 	return nil
 }
 
